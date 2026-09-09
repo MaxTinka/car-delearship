@@ -15,6 +15,8 @@ import bookingRoutes from './routes/bookingRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import optimizedRoutes from './routes/optimizedRoutes.js';
 import adminMetricsRoutes from './routes/adminMetricsRoutes.js';
+import reportRoutes from './routes/reportRoutes.js';
+import highValueRoutes from './routes/highValueRoutes.js';
 
 // Import performance middleware
 import { performanceMiddleware } from './middleware/performanceMiddleware.js';
@@ -57,6 +59,12 @@ app.use('/api/optimized', optimizedRoutes);
 
 // Admin metrics routes (Unified Admin Analytics Dashboard)
 app.use('/api/admin/metrics', adminMetricsRoutes);
+
+// Report routes (PDF Generator)
+app.use('/api/admin/reports', reportRoutes);
+
+// High-Value Alert routes (Spotlight System)
+app.use('/api/admin/spotlight', highValueRoutes);
 
 // ============================================
 // USER STORY 1: Financial Payment Approximation
@@ -326,7 +334,7 @@ app.get('/api/health', (req, res) => {
         status: 'OK', 
         timestamp: new Date().toISOString(),
         message: 'Panda Motors API is running!',
-        version: '2.0.0',
+        version: '3.0.0',
         endpoints: [
             // Financial
             'POST /api/finance/calculate - Calculate loan payments',
@@ -345,17 +353,29 @@ app.get('/api/health', (req, res) => {
             'GET /api/admin/stats - Full admin statistics',
             'GET /api/admin/stats/summary - Quick summary',
             
-            // Performance & Optimized Queries (NEW)
+            // Performance & Optimized Queries
             'GET /api/optimized/search - Optimized inventory search',
             'GET /api/optimized/availability - Quick availability check',
             'GET /api/optimized/stats - Inventory statistics',
             'GET /api/optimized/most-searched - Most searched makes',
             'GET /api/optimized/performance - Query performance report',
             
-            // Admin Metrics Dashboard (NEW)
+            // Admin Metrics Dashboard
             'GET /api/admin/metrics - Full admin dashboard metrics',
             'GET /api/admin/metrics/inventory - Inventory metrics only',
             'GET /api/admin/metrics/bookings - Booking metrics only',
+            
+            // Reports (NEW)
+            'GET /api/admin/reports/inventory - Download PDF inventory report',
+            'GET /api/admin/reports/inventory/json - Get inventory as JSON',
+            'GET /api/admin/reports/inventory/summary - Get inventory summary',
+            
+            // High-Value Spotlight System (NEW)
+            'GET /api/admin/spotlight/alerts - View spotlight alerts',
+            'GET /api/admin/spotlight/featured - Get featured vehicles',
+            'GET /api/admin/spotlight/stats - High-value statistics',
+            'POST /api/admin/spotlight/process-all - Process all vehicles',
+            'POST /api/admin/spotlight/process/:vehicleId - Process specific vehicle',
             
             // Health
             'GET /api/health - Health check'
@@ -385,6 +405,7 @@ app.listen(PORT, async () => {
     console.log('========================================');
     console.log(`?? Server running on: http://localhost:${PORT}`);
     console.log(`?? Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`?? Version: 3.0.0`);
     
     // Initialize database
     await initializeDatabase();
@@ -407,17 +428,29 @@ app.listen(PORT, async () => {
     console.log(`   GET  /api/admin/stats         - Full admin statistics`);
     console.log(`   GET  /api/admin/stats/summary - Quick summary`);
     
-    console.log('   --- Performance & Optimized Queries (NEW) ---');
+    console.log('   --- Performance & Optimized Queries ---');
     console.log(`   GET  /api/optimized/search    - Optimized inventory search`);
     console.log(`   GET  /api/optimized/availability - Quick availability check`);
     console.log(`   GET  /api/optimized/stats     - Inventory statistics`);
     console.log(`   GET  /api/optimized/most-searched - Most searched makes`);
     console.log(`   GET  /api/optimized/performance - Query performance report`);
     
-    console.log('   --- Admin Metrics Dashboard (NEW) ---');
+    console.log('   --- Admin Metrics Dashboard ---');
     console.log(`   GET  /api/admin/metrics       - Full dashboard metrics`);
     console.log(`   GET  /api/admin/metrics/inventory - Inventory metrics only`);
     console.log(`   GET  /api/admin/metrics/bookings - Booking metrics only`);
+    
+    console.log('   --- Reports (NEW) ---');
+    console.log(`   GET  /api/admin/reports/inventory     - Download PDF inventory report`);
+    console.log(`   GET  /api/admin/reports/inventory/json - Get inventory as JSON`);
+    console.log(`   GET  /api/admin/reports/inventory/summary - Get inventory summary`);
+    
+    console.log('   --- High-Value Spotlight System (NEW) ---');
+    console.log(`   GET  /api/admin/spotlight/alerts      - View spotlight alerts`);
+    console.log(`   GET  /api/admin/spotlight/featured    - Get featured vehicles`);
+    console.log(`   GET  /api/admin/spotlight/stats       - High-value statistics`);
+    console.log(`   POST /api/admin/spotlight/process-all - Process all vehicles`);
+    console.log(`   POST /api/admin/spotlight/process/:id - Process specific vehicle`);
     
     console.log('   --- Health ---');
     console.log(`   GET  /api/health              - Health check`);
